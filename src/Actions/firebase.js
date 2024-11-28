@@ -142,5 +142,14 @@ export async function updateCoupon(id, currentCouponStatus) {
 }
 
 export async function deleteCoupon(id){
-  console.log(id)
+  let couponList = []
+  try{
+    await deleteDoc(doc(db, "coupons", id))
+    couponList = await fetchCoupons()
+  }catch(error){
+    console.log("Error eliminando el cupon, ", error)
+  } finally{
+    console.log("cupon borrado con exito")
+  }
+  return couponList
 }

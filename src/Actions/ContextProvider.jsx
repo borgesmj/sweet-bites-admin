@@ -26,6 +26,8 @@ export const ContextProvider = ({ children }) => {
   const [productsLength, setProductsLength] = useState(0);
   // * LA cantidad de ordenes para pasar a la navbar
   const [ordersLength, setOrdersLength] = useState(0);
+  // * La cantidad de cupones para pasar a la navbar
+  const [couponsLength, setCouponsLength] = useState(0)
   //* Todos los productos
   const [allProducts, setAllProducts] = useState([]);
   // * Estado de carga
@@ -60,6 +62,7 @@ export const ContextProvider = ({ children }) => {
   useEffect(() => {
     setProductsLength(allProducts.length);
     setOrdersLength(allOrders.length);
+    setCouponsLength(allCoupons.length)
     const filterOrders = async () => {
       let pendingOrdersList = await allOrders
         .filter((order) => {
@@ -81,7 +84,7 @@ export const ContextProvider = ({ children }) => {
       setCancelOrders(cancelOrdersList);
     };
     filterOrders();
-  }, [allProducts, allOrders]);
+  }, [allProducts, allOrders, allCoupons]);
   // * Eliminar un producto
   const updateDeleteProduct = async (id) => {
     const newList = await deleteProduct(id);
@@ -154,6 +157,7 @@ export const ContextProvider = ({ children }) => {
         createNewCoupon,
         changeCouponStatus,
         deleteThisCoupon,
+        couponsLength
       }}
     >
       {children}

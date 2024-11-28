@@ -8,9 +8,10 @@ const Navlinks = () => {
         { name: "Cupones", href: "/cupones", quantity: "" },
         { name: "Galería", href: "/galeria", quantity: "" },
       ];
-  const {productsLength, ordersLength} = useApp()
+  const {productsLength, ordersLength, couponsLength} = useApp()
   links[1].quantity = productsLength;
   links[0].quantity = ordersLength;
+  links[2].quantity = couponsLength
   return (
     <nav className="nav w-56 h-dvh bg-blue-100 flex flex-col  justify-between py-8 px-4 fixed top-0 left-0 bottom-0">
       <div className="flex flex-col gap-5">

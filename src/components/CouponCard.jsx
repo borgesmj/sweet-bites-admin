@@ -20,7 +20,7 @@ const CouponCard = ({ coupon }) => {
   const { changeCouponStatus, deleteThisCoupon } = useApp();
 
   const handleDeleteCoupon = id => {
-    const confirm = window.alert("¿Estás seguro que quieres eliminar este cupon? Esta accion es ireversible")
+    const confirm = window.confirm("¿Estás seguro que quieres eliminar este cupon? Esta accion es ireversible")
     if (!confirm){
         return
     }
