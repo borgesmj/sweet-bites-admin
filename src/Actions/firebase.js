@@ -103,3 +103,44 @@ export async function completeOrder(id) {
     status: 2,
   });
 }
+
+export async function fetchCoupons() {
+  const couponsCol = collection(db, "coupons");
+  const couponsSnapshot = await getDocs(couponsCol);
+  const couponsList = couponsSnapshot.docs.map((doc) => doc.data());
+  return couponsList;
+}
+
+export async function addCoupon(coupon) {
+  let id = "";
+  try {
+    const docRef = await doc(collection(db, "coupons"));
+    id = docRef.id;
+    await setDoc(docRef, {
+      id,
+      ...coupon,
+    });
+  } catch (error) {
+    console.log("Error creando un cupon, ", error);
+  } finally {
+    console.log("Cupon creado con exito");
+  }
+}
+
+export async function updateCoupon(id, currentCouponStatus) {
+  try {
+    const couponRef = doc(db, "coupons", id);
+    await updateDoc(couponRef, {
+      is_valid: !currentCouponStatus,
+    });
+  } catch (error) {
+    console.log("Error actualizando el cupon, ", error);
+    return;
+  } finally {
+    console.log("Cupon actualizado con exito");
+  }
+}
+
+export async function deleteCoupon(id){
+  console.log(id)
+}

@@ -7,6 +7,10 @@ import {
   fetchOrders,
   cancelOrder,
   completeOrder,
+  fetchCoupons,
+  addCoupon,
+  updateCoupon,
+  deleteCoupon,
 } from "../Actions/firebase";
 
 const appContext = createContext();
@@ -32,14 +36,18 @@ export const ContextProvider = ({ children }) => {
   const [pendingOrders, setPendingOrders] = useState([]);
   const [completeOrders, setCompleteOrders] = useState([]);
   const [canceledOrders, setCancelOrders] = useState([]);
+  // * Lista de cupones
+  const [allCoupons, setAllCoupons] = useState([]);
   // !!!! Carga Inicial
   useEffect(() => {
     const loadProducts = async () => {
       try {
         const products = await fetchProducts();
         const orders = await fetchOrders();
+        const coupons = await fetchCoupons();
         setAllOrders(orders);
         setAllProducts(products);
+        setAllCoupons(coupons);
       } catch (error) {
         console.log(error);
       } finally {
@@ -103,6 +111,24 @@ export const ContextProvider = ({ children }) => {
     const newList = await fetchOrders();
     setAllOrders(newList);
   };
+  // * Crear un pupon nuevo
+  const createNewCoupon = async (coupon) => {
+    await addCoupon(coupon);
+    const couponList = await fetchCoupons();
+    setAllCoupons(couponList);
+  };
+
+  const changeCouponStatus = async (id, currentCouponStatus) => {
+    await updateCoupon(id, currentCouponStatus);
+    const couponList = await fetchCoupons();
+    setAllCoupons(couponList);
+  };
+
+  const deleteThisCoupon = async (id) => {
+    deleteCoupon(id);
+    const couponList = await fetchCoupons();
+    setAllCoupons(couponList);
+  };
   return (
     <appContext.Provider
       value={{
@@ -124,6 +150,10 @@ export const ContextProvider = ({ children }) => {
         completeNewOrder,
         couponModalOpen,
         setCouponModalOpen,
+        allCoupons,
+        createNewCoupon,
+        changeCouponStatus,
+        deleteThisCoupon,
       }}
     >
       {children}

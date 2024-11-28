@@ -3,7 +3,8 @@ import { useApp } from "../Actions/ContextProvider";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoAddOutline } from "react-icons/io5";
 const CouponModal = () => {
-  const { setCouponModalOpen, allProducts } = useApp();
+  const { setCouponModalOpen, allProducts, createNewCoupon, allCoupons } =
+    useApp();
   const [couponCode, setCouponCode] = useState("");
   const [couponType, setCouponType] = useState("discount");
   const [minDate, setMinDate] = useState("");
@@ -22,33 +23,47 @@ const CouponModal = () => {
       window.alert("Todos los datos con asterisco deben estar completos");
       return;
     }
-    if (couponType === "discount" || couponType === "discount_free-product"){
-      if (discount < 10){
-        window.alert('Debe incluir un porcentaje de al menos 10%');
-        return
+    const couponIndex = allCoupons.findIndex((coupon) => {
+      return coupon.code === couponCode.toUpperCase();
+    });
+    if (couponIndex > -1) {
+      window.alert("Ya existe un cupon con ese codigo");
+      return;
+    }
+    if (couponType === "discount" || couponType === "discount_free-product") {
+      if (discount < 10) {
+        window.alert("Debe incluir un porcentaje de al menos 10%");
+        return;
       }
     }
-    if (couponType === "free-product" || couponType === "discount_free-product"){
-      if (freeProductId === ""){
-        window.alert('Debe incluir un producto regalo')
-        return
-      } 
+    if (
+      couponType === "free-product" ||
+      couponType === "discount_free-product"
+    ) {
+      if (freeProductId === "") {
+        window.alert("Debe incluir un producto regalo");
+        return;
+      }
     }
     if (discount > 50) {
       window.alert("El descuento no puede ser mayor a 50%");
       return;
     }
-    if (minPurchase === 0){
-      const confirm = window.confirm("Este cupon no tiene monto de compra minima. ¿Continuar?")
-      if (!confirm){
-        return
+    if (minPurchase === 0) {
+      const confirm = window.confirm(
+        "Este cupon no tiene monto de compra minima. ¿Continuar?"
+      );
+      if (!confirm) {
+        return;
       }
     }
 
-    if (validProductsIds.length < 1 ){
-      const confirm = window.confirm("Este cupon no tiene productos de requisitos. ¿Continuar?")
-      if (!confirm){
-        return
+    if (validProductsIds.length < 1) {
+      const confirm = window.confirm(
+        "Este cupon no tiene productos de requisitos. ¿Continuar?"
+      );
+      if (!confirm) {
+        return;
       }
     }
     const newCoupon = {
@@ -62,9 +77,10 @@ const CouponModal = () => {
         min_purchase: Number(minPurchase),
         valid_products: validProductsIds,
       },
-      is_valid: true
+      is_valid: true,
+      created_at: new Date(),
     };
-    console.log(newCoupon);
+    createNewCoupon(newCoupon);
     setCouponModalOpen(false);
   };
   useEffect(() => {
@@ -256,12 +272,20 @@ const CouponModal = () => {
           <label htmlFor="">Productos válidos:</label>
           <div className="w-full flex flex-row gap-4">
             {validProductsCards.map((product_item) => (
-              <div className="w-24 h-12 p-2 flex flex-col justify-center items-center bg-blue-400 rounded-lg cursor-pointer" key={product_item.id}>
+              <div
+                className="w-24 h-12 p-2 flex flex-col justify-center items-center bg-blue-400 rounded-lg cursor-pointer"
+                key={product_item.id}
+              >
                 <span className="text-xs">{product_item.name}</span>
-                <img src={product_item.image}/>
+                <img src={product_item.image} />
               </div>
             ))}
-            <div className="w-24 h-12 p-2 flex justify-center items-center bg-blue-400 rounded-lg cursor-pointer" onClick={()=> {setValidProductsModalOpen(true)}}>
+            <div
+              className="w-24 h-12 p-2 flex justify-center items-center bg-blue-400 rounded-lg cursor-pointer"
+              onClick={() => {
+                setValidProductsModalOpen(true);
+              }}
+            >
               <IoAddOutline />
             </div>
           </div>
@@ -290,15 +314,21 @@ const CouponModal = () => {
       {validProductsModalOpen && (
         <div className="absolute right-0 top-0 bottom-0 overflow-y-auto bg-slate-400 w-60 max-w-60 h-full flex flex-col gap-4 p-4">
           {allProducts.map((product) => (
-            <div className="w-full flex flex-row transition-all hover:scale-105 cursor-pointer" onClick={()=>{
-              setValidProductsCards([...validProductsCards, {
-                name: product.title,
-                image: product.images.png,
-                id: product.id
-              }])
-              setValidProductsIds([...validProductsIds, product.id])
-              setValidProductsModalOpen(false)
-            }}>
+            <div
+              className="w-full flex flex-row transition-all hover:scale-105 cursor-pointer"
+              onClick={() => {
+                setValidProductsCards([
+                  ...validProductsCards,
+                  {
+                    name: product.title,
+                    image: product.images.png,
+                    id: product.id,
+                  },
+                ]);
+                setValidProductsIds([...validProductsIds, product.id]);
+                setValidProductsModalOpen(false);
+              }}
+            >
               <img
                 src={product.images.png}
                 alt={product.images.alt}
