@@ -270,25 +270,24 @@ const CouponModal = () => {
         </div>
         <div className="form-field w-full flex items-start gap-2 flex-col">
           <label htmlFor="">Productos válidos:</label>
-          <div className="w-full flex flex-row gap-4">
+          <ul className="w-full list-disc text-xs pl-4 columns-3">
             {validProductsCards.map((product_item) => (
-              <div
-                className="w-24 h-12 p-2 flex flex-col justify-center items-center bg-blue-400 rounded-lg cursor-pointer"
+              <li
+                className="p-2 rounded-lg cursor-pointer list-disc"
                 key={product_item.id}
               >
-                <span className="text-xs">{product_item.name}</span>
-                <img src={product_item.image} />
-              </div>
+                {product_item.name}
+              </li>
             ))}
             <div
-              className="w-24 h-12 p-2 flex justify-center items-center bg-blue-400 rounded-lg cursor-pointer"
+              className="w-12 h-12 p-2 flex justify-center items-center bg-blue-400 rounded-lg cursor-pointer"
               onClick={() => {
                 setValidProductsModalOpen(true);
               }}
             >
               <IoAddOutline />
             </div>
-          </div>
+          </ul>
         </div>
         <div className="flex justify-center items-center gap-8">
           <button
