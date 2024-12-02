@@ -11,33 +11,32 @@ import { Routes, Route, useLocation } from "react-router";
 import { useApp } from "./Actions/ContextProvider";
 import EditModal from "./components/EditModal";
 import CouponModal from "./components/CouponModal";
+import ProtectedRoute from "./Actions/ProtectedRoute";
 const App = () => {
-  const { selectedEditProduct, editModalOpen, couponModalOpen } = useApp();
-
-  const location = useLocation();
-  const isLoginPage = location.pathname === "/login";
+  const { selectedEditProduct, editModalOpen, couponModalOpen, user } = useApp();;
   return (
     <>
-      {!isLoginPage && (
-        <Dashboard>
-          <div className="container ml-56">
-            <Routes>
-              <Route path="/pedidos" element={<Pedidos />}>
-                {/* Rutas anidadas */}
-                <Route index element={<Pendientes />}></Route>
-                <Route path="pendientes" element={<Pendientes />} />
-                <Route path="completados" element={<Completados />} />
-                <Route path="cancelados" element={<Cancelados />} />
-              </Route>
-              <Route path="/productos" element={<Productos />} />
-              <Route path="/galeria" element={<Galeria />} />
-              <Route path="/cupones" element={<Cupones />} />
-            </Routes>
-          </div>
-          {editModalOpen && <EditModal product={selectedEditProduct} />}
-          {couponModalOpen && <CouponModal />}
-        </Dashboard>
-      )}
+        <ProtectedRoute user={user}>
+          <Dashboard>
+            <div className="container ml-56">
+              <Routes>
+                <Route index element={<Pedidos />} />
+                <Route path="/pedidos" element={<Pedidos />}>
+                  {/* Rutas anidadas */}
+                  <Route index element={<Pendientes />}></Route>
+                  <Route path="pendientes" element={<Pendientes />} />
+                  <Route path="completados" element={<Completados />} />
+                  <Route path="cancelados" element={<Cancelados />} />
+                </Route>
+                <Route path="/productos" element={<Productos />} />
+                <Route path="/galeria" element={<Galeria />} />
+                <Route path="/cupones" element={<Cupones />} />
+              </Routes>
+            </div>
+            {editModalOpen && <EditModal product={selectedEditProduct} />}
+            {couponModalOpen && <CouponModal />}
+          </Dashboard>
+        </ProtectedRoute>
       <Routes>
         <Route path="/login" element={<Login />} />
       </Routes>
