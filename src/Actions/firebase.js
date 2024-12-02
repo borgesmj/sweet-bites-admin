@@ -1,12 +1,16 @@
 import { initializeApp } from "firebase/app";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   getFirestore,
+  query,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 
 const firebase_APIKEY = import.meta.env.VITE_FIREBASE_API_KEY;
@@ -141,15 +145,38 @@ export async function updateCoupon(id, currentCouponStatus) {
   }
 }
 
-export async function deleteCoupon(id){
-  let couponList = []
-  try{
-    await deleteDoc(doc(db, "coupons", id))
-    couponList = await fetchCoupons()
-  }catch(error){
-    console.log("Error eliminando el cupon, ", error)
-  } finally{
-    console.log("cupon borrado con exito")
+export async function deleteCoupon(id) {
+  let couponList = [];
+  try {
+    await deleteDoc(doc(db, "coupons", id));
+    couponList = await fetchCoupons();
+  } catch (error) {
+    console.log("Error eliminando el cupon, ", error);
+  } finally {
+    console.log("cupon borrado con exito");
   }
-  return couponList
+  return couponList;
+}
+
+export async function loginUser(data) {
+  const auth = getAuth();
+  const { username, password } = data;
+  let email = username;
+  try {
+    if (!email.includes("@")) {
+      const usersCol = collection(db, "users");
+      const q = await query(usersCol, where("username", "==", email));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0].data();
+        email = userDoc.email;
+      } else {
+        throw new Error("No se encontro este usuario");
+      }
+    }
+    const credentials = await signInWithEmailAndPassword(auth, email, password);
+    return credentials.user;
+  } catch (error) {
+    window.alert(error);
+  }
 }

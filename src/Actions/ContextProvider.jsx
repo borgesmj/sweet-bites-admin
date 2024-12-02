@@ -11,7 +11,9 @@ import {
   addCoupon,
   updateCoupon,
   deleteCoupon,
+  loginUser
 } from "../Actions/firebase";
+import { useLocation, useNavigate } from "react-router";
 
 const appContext = createContext();
 
@@ -40,6 +42,13 @@ export const ContextProvider = ({ children }) => {
   const [canceledOrders, setCancelOrders] = useState([]);
   // * Lista de cupones
   const [allCoupons, setAllCoupons] = useState([]);
+  // * usuario loggeado
+  const [user, setUser] = useState(null)
+  // * datos del usuario
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const pathname = useLocation().pathname;
   // !!!! Carga Inicial
   useEffect(() => {
     const loadProducts = async () => {
@@ -58,6 +67,15 @@ export const ContextProvider = ({ children }) => {
     };
     loadProducts();
   }, []);
+  useEffect(() => {
+    const userLS = localStorage.getItem('user')
+    if (userLS){
+      setUser(JSON.parse(userLS))
+      console.log()
+    navigate(pathname)
+      
+    }
+  }, [])
   // * Longitud de los productos para colocar el numero en la dashboard
   useEffect(() => {
     setProductsLength(allProducts.length);
@@ -132,6 +150,25 @@ export const ContextProvider = ({ children }) => {
     const couponList = await fetchCoupons();
     setAllCoupons(couponList);
   };
+
+  const handleLoginUser = async (data) => {
+    const userCredentials = await loginUser(data)
+    setUser({
+      username: username,
+      uid: userCredentials.uid
+    })
+    navigate("/pedidos")
+  }
+
+  useEffect(() => {
+    localStorage.setItem('user', JSON.stringify(user))
+  }, [user])
+
+  const handleLogOutUser = () => {
+    setUser(null)
+    localStorage.removeItem('user')
+    navigate("/login")
+  }
   return (
     <appContext.Provider
       value={{
@@ -157,7 +194,14 @@ export const ContextProvider = ({ children }) => {
         createNewCoupon,
         changeCouponStatus,
         deleteThisCoupon,
-        couponsLength
+        couponsLength,
+        handleLoginUser,
+        user,
+        username,
+        setUsername,
+        password,
+        setPassword,
+        handleLogOutUser 
       }}
     >
       {children}

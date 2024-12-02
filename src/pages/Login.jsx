@@ -1,14 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useApp } from "../Actions/ContextProvider";
 const Login = () => {
-  const { loginUser, handleLoginResult } = useApp();
-  const handleLoginClck = async () => {
-    await loginUser();
+  const { handleLoginUser, username, setUsername, password, setPassword } =
+    useApp();
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const data = {
+      username,
+      password,
+    };
+    handleLoginUser(data);
   };
-
-  useEffect(() => {
-    handleLoginResult();
-  }, []);
   return (
     <div className="w-dvw h-dvh flex flex-row justify-center items-center">
       <div className="w-1/3 h-full bg-blue-400 flex justify-center items-center px-4">
@@ -17,15 +19,46 @@ const Login = () => {
         </h3>
       </div>
       <div className="w-2/3 h-full  flex justify-center items-center">
-        <button
-          type="button"
-          className="login-with-google-btn  bg-no-repeat bg-white border-none rounded-[3px] text-[#757575] text-[14px] font-[500] py-3 pr-4 pl-11 shadow-md transition-all hover:shadow-lg active:bg-[#eeeeee]"
-          onClick={() => {
-            handleLoginClck();
+        <form
+          onSubmit={(e) => {
+            handleLogin(e);
           }}
+          method="post"
+          className="shadow-xl p-4 flex flex-col items-center gap-4"
         >
-          Sign in with Google
-        </button>
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            className="w-full px-2 text-xl"
+            required
+            placeholder="Nombre de usuario o correo"
+            onChange={(e) => {
+              setUsername(e.target.value);
+            }}
+            value={username}
+            autoComplete="off"
+          />
+          <input
+            type="password"
+            name=""
+            id=""
+            className="w-full px-2 text-xl"
+            required
+            placeholder="Contraseña"
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+            value={password}
+            autoComplete="off"
+          />
+          <button
+            type="submit"
+            className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
+          >
+            Entrar
+          </button>
+        </form>
       </div>
     </div>
   );
