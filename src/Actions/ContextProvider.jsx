@@ -152,11 +152,8 @@ export const ContextProvider = ({ children }) => {
   };
 
   const handleLoginUser = async (data) => {
-    const userCredentials = await loginUser(data)
-    setUser({
-      username: username,
-      uid: userCredentials.uid
-    })
+    const currentUser = await loginUser(data)
+    setUser(currentUser)
     navigate("/pedidos")
   }
 

@@ -162,20 +162,41 @@ export async function loginUser(data) {
   const auth = getAuth();
   const { username, password } = data;
   let email = username;
+  const user = {}
   try {
+    // * si no incluye un arroba
     if (!email.includes("@")) {
+      // * entramos a la coleccion usuarios
       const usersCol = collection(db, "users");
+      // * consultamos si el usuario existe con respecto al username que proporcionó
       const q = await query(usersCol, where("username", "==", email));
+      // * se extrae el documento de la consulta
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
         const userDoc = querySnapshot.docs[0].data();
         email = userDoc.email;
+        user.username = username
+        user.email = email
+      } else {
+        throw new Error("No se encontro este usuario");
+      }
+    } else{
+      //* si tiene un arroba, es un correo electronico
+      //* queremos extraer el nombre de usuario
+      const usersCol = collection(db, "users");
+      const q = await query(usersCol, where("email", "==", email));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0].data();
+        user.username = userDoc.username
+        user.email = email
       } else {
         throw new Error("No se encontro este usuario");
       }
     }
     const credentials = await signInWithEmailAndPassword(auth, email, password);
-    return credentials.user;
+    user.uid = credentials.user.uid;
+    return user
   } catch (error) {
     window.alert(error);
   }
