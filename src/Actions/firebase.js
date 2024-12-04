@@ -25,7 +25,16 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth();
 
+function checkIsUser() {
+  const user = auth.currentUser;
+  if (!user) {
+    window.alert("usuario no autorizado para realizar esta accion");
+    return false;
+  }
+  return true;
+}
 export async function fetchProducts() {
   const productsCol = collection(db, "products");
   const productsSnapshot = await getDocs(productsCol);
@@ -34,6 +43,8 @@ export async function fetchProducts() {
 }
 
 export async function updateProduct(id, newProduct) {
+  const isUser = checkIsUser();
+  if (!isUser) return;
   try {
     const productRef = doc(db, "products", id);
     await updateDoc(productRef, {
@@ -55,6 +66,8 @@ export async function updateProduct(id, newProduct) {
 }
 
 export async function deleteProduct(id) {
+  const isUser = checkIsUser();
+  if (!isUser) return;
   let filteredProducts = [];
   try {
     await deleteDoc(doc(db, "products", id));
@@ -68,6 +81,8 @@ export async function deleteProduct(id) {
 }
 
 export async function updateNewProduct(newProduct) {
+  const isUser = checkIsUser();
+  if (!isUser) return;
   let id = "";
   try {
     const docRef = await doc(collection(db, "products"));
@@ -88,6 +103,8 @@ export async function updateNewProduct(newProduct) {
 }
 
 export async function fetchOrders() {
+  const isUser = checkIsUser();
+  if (!isUser) return;
   const productsCol = collection(db, "orders");
   const productsSnapshot = await getDocs(productsCol);
   const ordersList = productsSnapshot.docs.map((doc) => doc.data());
@@ -95,6 +112,8 @@ export async function fetchOrders() {
 }
 
 export async function cancelOrder(id) {
+  const isUser = checkIsUser();
+  if (!isUser) return;
   const orderRef = doc(db, "orders", id);
   await updateDoc(orderRef, {
     status: 3,
@@ -102,6 +121,8 @@ export async function cancelOrder(id) {
 }
 
 export async function completeOrder(id) {
+  const isUser = checkIsUser();
+  if (!isUser) return;
   const orderRef = doc(db, "orders", id);
   await updateDoc(orderRef, {
     status: 2,
@@ -116,6 +137,8 @@ export async function fetchCoupons() {
 }
 
 export async function addCoupon(coupon) {
+  const isUser = checkIsUser();
+  if (!isUser) return;
   let id = "";
   try {
     const docRef = await doc(collection(db, "coupons"));
@@ -132,6 +155,8 @@ export async function addCoupon(coupon) {
 }
 
 export async function updateCoupon(id, currentCouponStatus) {
+  const isUser = checkIsUser();
+  if (!isUser) return;
   try {
     const couponRef = doc(db, "coupons", id);
     await updateDoc(couponRef, {
@@ -146,6 +171,8 @@ export async function updateCoupon(id, currentCouponStatus) {
 }
 
 export async function deleteCoupon(id) {
+  const isUser = checkIsUser();
+  if (!isUser) return;
   let couponList = [];
   try {
     await deleteDoc(doc(db, "coupons", id));
@@ -159,10 +186,9 @@ export async function deleteCoupon(id) {
 }
 
 export async function loginUser(data) {
-  const auth = getAuth();
   const { username, password } = data;
   let email = username;
-  const user = {}
+  const user = {};
   try {
     // * si no incluye un arroba
     if (!email.includes("@")) {
@@ -175,12 +201,12 @@ export async function loginUser(data) {
       if (!querySnapshot.empty) {
         const userDoc = querySnapshot.docs[0].data();
         email = userDoc.email;
-        user.username = username
-        user.email = email
+        user.username = username;
+        user.email = email;
       } else {
         throw new Error("No se encontro este usuario");
       }
-    } else{
+    } else {
       //* si tiene un arroba, es un correo electronico
       //* queremos extraer el nombre de usuario
       const usersCol = collection(db, "users");
@@ -188,16 +214,25 @@ export async function loginUser(data) {
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
         const userDoc = querySnapshot.docs[0].data();
-        user.username = userDoc.username
-        user.email = email
+        user.username = userDoc.username;
+        user.email = email;
       } else {
         throw new Error("No se encontro este usuario");
       }
     }
     const credentials = await signInWithEmailAndPassword(auth, email, password);
+    user.token = auth.currentUser.accessToken;
     user.uid = credentials.user.uid;
-    return user
+    return user;
   } catch (error) {
     window.alert(error);
+  }
+}
+
+export async function logOut() {
+  try {
+    auth.signOut()
+  } catch (error) {
+    console.log("eeror haciendo logout", error)
   }
 }

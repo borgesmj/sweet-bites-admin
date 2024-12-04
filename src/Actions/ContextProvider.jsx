@@ -11,7 +11,8 @@ import {
   addCoupon,
   updateCoupon,
   deleteCoupon,
-  loginUser
+  loginUser,
+  logOut
 } from "../Actions/firebase";
 import { useLocation, useNavigate } from "react-router";
 
@@ -162,6 +163,7 @@ export const ContextProvider = ({ children }) => {
   }, [user])
 
   const handleLogOutUser = () => {
+    logOut()
     setUser(null)
     localStorage.removeItem('user')
     navigate("/login")
