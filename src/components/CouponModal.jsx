@@ -112,6 +112,7 @@ const CouponModal = () => {
         action=""
         className="bg-white p-4 w-1/2 flex flex-col gap-2 relative"
       >
+        <p className="font-bold w-full text-center">Codigo y tipo de cupón</p>
         <p className="form-field w-full flex items-center gap-2">
           <label className="w-1/4" htmlFor="coupon-code">
             Codigo del cupón:<span className="text-red-500">*</span>
@@ -138,49 +139,52 @@ const CouponModal = () => {
             value={couponType}
           >
             <option value="discount" defaultValue>
-              discount
+              Descuento
             </option>
-            <option value="free-product">free-product</option>
+            <option value="free-product">Producto gratis</option>
             <option value="discount_free-product">
-              Discount + free product
+              Descuento + producto gratis
             </option>
           </select>
         </p>
-        <p className="form-field w-full flex items-center gap-2">
-          <label htmlFor="start-date">
-            Fecha de inicio:<span className="text-red-500">*</span>
-          </label>
-          <input
-            type="date"
-            name=""
-            id="start-date"
-            min={minDate}
-            value={startDate}
-            onChange={(e) => {
-              setStartDate(e.target.value);
-            }}
-          />
-        </p>
-        <p className="form-field w-full flex items-center gap-2">
-          <label htmlFor="end-date">
-            Fecha final:<span className="text-red-500">*</span>
-          </label>
-          <input
-            type="date"
-            name=""
-            id="end-date"
-            min={minDate}
-            value={endDate}
-            onChange={(e) => {
-              setEndDate(e.target.value);
-            }}
-          />
+        <p className="font-bold w-full text-center">Periodo válido</p>
+        <p className="form-field w-full flex items-center gap-2 justify-around">
+          <p className="border-b-solid border-b-2 border-b-black">
+            <label htmlFor="start-date">
+              Fecha de inicio:<span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              name=""
+              id="start-date"
+              min={minDate}
+              value={startDate}
+              onChange={(e) => {
+                setStartDate(e.target.value);
+              }}
+            />
+          </p>
+          <p className="border-b-solid border-b-2 border-b-black">
+            <label htmlFor="end-date">
+              Fecha final:<span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              name=""
+              id="end-date"
+              min={minDate}
+              value={endDate}
+              onChange={(e) => {
+                setEndDate(e.target.value);
+              }}
+            />
+          </p>
         </p>
         <p className="form-field w-full flex items-center gap-2">
           <label htmlFor="discount">Descuento:</label>
           <input
             type="text"
-            className="w-3/4 px-2 uppercase"
+            className="w-12 px-2 uppercase"
             name=""
             id="discount"
             value={discount}
@@ -188,16 +192,21 @@ const CouponModal = () => {
               const value = e.target.value;
               const regex = /^[0-9]*$/; // Permite solo números
               if (regex.test(value)) {
-                setDiscount(value);
+                if(discount === 0){
+                  setDiscount(discount.slice("", discount.length - 1))
+                } else{
+                  setDiscount(value);
+                }
               }
             }}
           />
+          <span>%</span>
         </p>
         <p className="form-field w-full flex items-center gap-2">
           <label htmlFor="min_purchase">Compra Minima:</label>
           <input
             type="text"
-            className="w-3/4 px-2 uppercase"
+            className="w-20 px-2 uppercase"
             name=""
             id="min_purchase"
             value={minPurchase}
@@ -210,6 +219,7 @@ const CouponModal = () => {
             }}
           />
         </p>
+        <span className="text-xs text-red-600 ">Monto mínimo de compra que debe realizar el cliente.</span>
         <div className="form-field w-full flex items-center gap-2 ">
           <label htmlFor="">Producto regalo:</label>
           <input
@@ -268,27 +278,8 @@ const CouponModal = () => {
             </>
           )}
         </div>
-        <div className="form-field w-full flex items-start gap-2 flex-col">
-          <label htmlFor="">Productos válidos:</label>
-          <ul className="w-full list-disc text-xs pl-4 columns-3">
-            {validProductsCards.map((product_item) => (
-              <li
-                className="p-2 rounded-lg cursor-pointer list-disc"
-                key={product_item.id}
-              >
-                {product_item.name}
-              </li>
-            ))}
-            <div
-              className="w-12 h-12 p-2 flex justify-center items-center bg-blue-400 rounded-lg cursor-pointer"
-              onClick={() => {
-                setValidProductsModalOpen(true);
-              }}
-            >
-              <IoAddOutline />
-            </div>
-          </ul>
-        </div>
+        <span className="text-xs text-red-600 ">Producto regalo con el cupon correspondiente. Busca el producto para agregarlo. La lista solo agrega los productos catalogados como especial</span>
+
         <div className="flex justify-center items-center gap-8">
           <button
             type="button"
