@@ -54,6 +54,7 @@ export async function updateProduct(id, newProduct) {
       images: newProduct.images,
       special_product: newProduct.special_product,
       productPrices: newProduct.productPrices,
+      isAvailable: newProduct.isAvailable
     });
     const newList = await fetchProducts();
     return newList;

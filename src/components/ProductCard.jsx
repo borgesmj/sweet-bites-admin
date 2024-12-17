@@ -70,12 +70,19 @@ const ProductCard = ({ product }) => {
           ))}
         </ul>
       </div>
-
+git
       {/* Producto especial */}
       <p className="text-gray-600 text-sm">
         <strong>¿Es un producto especial?</strong>{" "}
         <span className="font-medium">
           {product.special_product ? "Sí" : "No"}
+        </span>
+      </p>
+      {/* Producto disponible */}
+      <p className="text-gray-600 text-sm">
+        <strong>¿Está disponible?</strong>{" "}
+        <span className="font-medium">
+          {product.isAvailable ? "Sí" : "No"}
         </span>
       </p>
       {/** ID del producto para incluir al cupon */}

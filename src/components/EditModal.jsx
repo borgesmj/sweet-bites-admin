@@ -38,7 +38,10 @@ const EditModal = ({ product }) => {
   const [productPrices, setProductPrices] = useState(
     editProduct ? product.productPrices || [] : []
   );
-
+  // * Producto disponible
+  const [isProductAvailable, setIsProductAvailable] = useState(
+    editProduct ? product.isAvailable || false : false
+  );
   /**
    * * Funcion para añadir un precio nuevo a la lista de precios
    * @returns
@@ -73,7 +76,16 @@ const EditModal = ({ product }) => {
    * @returns
    */
   const handleClick = () => {
-    if ([productName, produuctDescription, productCategory, productAltText, producImagePng, producImageWebp].includes("")){
+    if (
+      [
+        productName,
+        produuctDescription,
+        productCategory,
+        productAltText,
+        producImagePng,
+        producImageWebp,
+      ].includes("")
+    ) {
       window.alert("Por favor, completa todos los campos");
       return;
     }
@@ -100,6 +112,7 @@ const EditModal = ({ product }) => {
         category: productCategory,
         special_product: specialProduct,
         productPrices: productPrices,
+        isAvailable: isProductAvailable
       };
       updateProductList(product.id, updatedProduct);
     } else {
@@ -114,6 +127,7 @@ const EditModal = ({ product }) => {
         category: productCategory,
         special_product: specialProduct,
         productPrices: productPrices,
+        isAvailable: isProductAvailable
       };
       createNewProduct(newProduct);
     }
@@ -121,7 +135,10 @@ const EditModal = ({ product }) => {
   };
   return (
     <div className="fixed top-0 bottom-0 left-0 right-0 w-dvw h-dvh bg-[#00000030] flex justify-center items-center">
-      <form action="" className="bg-white p-4 w-1/2 flex flex-col gap-2">
+      <form
+        action=""
+        className="bg-white p-4 w-1/2 flex flex-col gap-2 max-h-[90%] overflow-y-auto"
+      >
         <h3 className="font-bold text-center text-2xl text-gray-800 w-full">
           Datos principales
         </h3>
@@ -177,7 +194,7 @@ const EditModal = ({ product }) => {
         </h3>
         <p className="form-field w-full flex items-center gap-2">
           <label className="w-1/4" htmlFor="imagewebp">
-            Imagen .webp:
+            Imagen principal:
           </label>
           <input
             type="text"
@@ -195,7 +212,7 @@ const EditModal = ({ product }) => {
         </p>
         <p className="form-field w-full flex items-center gap-2">
           <label className="w-1/4" htmlFor="imagepng">
-            Imagen .png:
+            Imagen parrilla productos:
           </label>
           <input
             type="text"
@@ -226,24 +243,48 @@ const EditModal = ({ product }) => {
             }}
           />
         </p>
-        <p className="form-field w-full flex items-center gap-2">
-          <label className="w-1/4" htmlFor="special-product">
-            ¿Es un producto especial?
+        <h3 className="font-bold text-center text-lg text-gray-800 w-full">
+          ¿Es un producto especial?
+        </h3>
+        <p className="form-field w-full flex items-center justify-center gap-2">
+          <label htmlFor="special-product" className="inline-flex items-center cursor-pointer">
+            <input
+              className="sr-only peer"
+              type="checkbox"
+              name=""
+              id="special-product"
+              checked={specialProduct}
+              onChange={(e) => {
+                setEspecialProduct(e.target.checked);
+              }}
+            />
+            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <span className="font-bold ml-2 text-gray-800">{specialProduct ? "Si" : "No"}</span>
           </label>
-          <input
-            type="checkbox"
-            name=""
-            id="special-product"
-            checked={specialProduct}
-            onChange={(e) => {
-              setEspecialProduct(e.target.checked);
-            }}
-          />
+        </p>
+        <h3 className="font-bold text-center text-lg text-gray-800 w-full">
+          ¿Está disponible?
+        </h3>
+        <p className="form-field w-full flex items-center justify-center gap-2">
+          <label htmlFor="product-available" className="inline-flex items-center cursor-pointer">
+            <input
+              className="sr-only peer"
+              type="checkbox"
+              name=""
+              id="product-available"
+              checked={isProductAvailable}
+              onChange={(e) => {
+                setIsProductAvailable(e.target.checked);
+              }}
+            />
+            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <span className="font-bold ml-2 text-gray-800">{isProductAvailable ? "Si" : "No"}</span>
+          </label>
         </p>
         <h3 className="font-bold text-center text-2xl text-gray-800 w-full">
           Precios
         </h3>
-        <div className="max-w-full overflow-x-auto scroll-snap-x flex flex-row gap-4 px-4 items-center">
+        <div className="max-w-full scroll-snap-x flex flex-row gap-4 px-4 items-center">
           {productPrices.map((price, index) => (
             <PriceCard
               key={index}
